@@ -1,9 +1,10 @@
-\documentclass[aspectratio=169, dvipsnames, theorems=ams]{beamer}
+\documentclass[aspectratio=169, dvipsnames, theorems=ams, t]{beamer}
 \usetheme{princeton}
 
 \usepackage[T1]{fontenc}
 %\usepackage[final]{microtype}
-\usepackage{lmodern}
+% NOTE: text font (Carlito, a Calibri clone) is set by the princeton theme.
+% Keep eulervm for math only.
 \usepackage[euler-digits,euler-hat-accent]{eulervm}
 
 \usepackage{amsmath,amssymb,amsfonts,mathtools,bm}
@@ -76,13 +77,12 @@
 
 \begin{document}
 
-\begin{frame}[plain]
+\begin{frame}[plain,b]
     \titlepage
 \end{frame}
 
-\begin{frame}{Table of Contents}
-  \tableofcontents[]
-\end{frame}
+% The section outline (\AtBeginSection -> "Outline") serves as the agenda
+% and as a divider before each section, so no separate TOC frame is needed.
 
 % set variable for the directory of the slides
 \newcommand{\slidesdir}{example}
