@@ -1,0 +1,97 @@
+\documentclass[aspectratio=169, dvipsnames, theorems=ams]{beamer}
+\usetheme{princeton}
+
+\usepackage[T1]{fontenc}
+%\usepackage[final]{microtype}
+\usepackage{lmodern}
+\usepackage[euler-digits,euler-hat-accent]{eulervm}
+
+\usepackage{amsmath,amssymb,amsfonts,mathtools,bm}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs,arydshln}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{algorithmic}
+\setlength{\marginparwidth}{2cm} % required by todonotes to avoid layout warnings
+\usepackage{todonotes}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{textcomp}
+\usepackage{gensymb}
+\usepackage{wasysym}
+\usepackage{ifsym}
+\usepackage{relsize}
+\usepackage{tabto}
+\usepackage{filecontents}
+\usepackage{framed}
+\usepackage{tcolorbox}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usepackage{enumitem}
+\setitemize{label=\usebeamerfont*{itemize item}%
+  \usebeamercolor[fg]{itemize item}
+  \usebeamertemplate{itemize item}}
+\usepackage{ulem}
+\usepackage{pdfpages}
+
+% Citations: keep using \cite{...} but render as "Author et al. [1]"
+% This uses natbib in numeric mode; \cite is aliased to \citet.
+\usepackage[authoryear,square]{natbib}
+% Prevent natbib from inserting a \section*{References} (would trigger \AtBeginSection)
+\renewcommand{\bibsection}{}
+
+\setbeamertemplate{theorems}[numbered]
+
+\pgfplotsset{compat=1.15}
+\usepgfplotslibrary{fillbetween}
+\usetikzlibrary{calc}
+\usetikzlibrary{colorbrewer}
+\usetikzlibrary{shapes}
+\usetikzlibrary{overlay-beamer-styles}
+\usepgfplotslibrary{colorbrewer}
+
+\newcommand{\mainblock}[2] {
+\begin{tcolorbox}[colback=princeton!5,colframe=princeton!90!black,title={\centering #1}]
+#2
+\end{tcolorbox}  
+}
+
+\newcommand{\boxedblock}[1] {
+\begin{tcolorbox}[colback=princeton!5,colframe=princeton!75!black]
+\centering
+#1
+\end{tcolorbox}  
+}
+
+\title[\today]{Meeting}
+\subtitle{}
+\date{\today}
+
+\author{Anderson Lee}
+
+\institute{\includegraphics[height=0.05\textwidth]{logos/princeton_logo.pdf}}
+
+\begin{document}
+
+\begin{frame}[plain]
+    \titlepage
+\end{frame}
+
+\begin{frame}{Table of Contents}
+  \tableofcontents[]
+\end{frame}
+
+% set variable for the directory of the slides
+\newcommand{\slidesdir}{example}
+
+\input{\slidesdir/main.tex}
+
+% \begin{frame}[allowframebreaks]{References}
+%     \bibliographystyle{abbrvnat}
+%     \bibliography{\slidesdir/reference.bib}
+% \end{frame}
+
+\end{document}

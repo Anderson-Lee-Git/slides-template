@@ -1,0 +1,236 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeprinceton}[2025/12/17 Princeton University Theme]
+
+% For \uline used in frametitle underline (keep \emph unchanged)
+\RequirePackage[normalem]{ulem}
+
+% 1. Load the base Metropolis theme
+\usetheme{metropolis}
+\usefonttheme{serif}
+
+%  Colors
+\setbeamercolor{background canvas}{bg=white}
+\definecolor{princeton}{RGB}{231, 100, 36}
+\definecolor{backg}{RGB}{250, 250, 250}
+
+\colorlet{accentcolor}{princeton}
+
+\setbeamercolor{title}{fg=accentcolor}
+\setbeamercolor{subtitle}{fg=accentcolor!80!black}
+\setbeamerfont{subtitle}{size=\normalsize}
+\setbeamercolor{frametitle}{fg=backg, bg=accentcolor}
+
+% Make Metropolis' title separator use Princeton orange
+\setbeamertemplate{title separator}{%
+  \par\noindent{\color{princeton}\rule{\textwidth}{1pt}}\par%
+}
+
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+
+\setbeamertemplate{title page}{
+  % Use \textheight (frame content height) instead of \paperheight to avoid Overfull \vbox.
+  \begin{minipage}[b][\textheight]{\textwidth}
+    \vspace*{2mm}
+    \vfill%
+    \ifx\inserttitle\@empty\else\usebeamertemplate*{title}\fi
+    \ifx\insertsubtitle\@empty\else\usebeamertemplate*{subtitle}\fi
+    \usebeamertemplate*{title separator}
+    \ifx\beamer@shortauthor\@empty\else\usebeamertemplate*{author}\fi
+    \ifx\insertdate\@empty\else\usebeamertemplate*{date}\fi
+
+    % Bottom-right "logo area": prefer titlegraphic if set; otherwise fall back to institute.
+    \vfill
+    \begin{flushright}
+      \ifx\inserttitlegraphic\@empty\else\usebeamertemplate*{title graphic}\fi
+      \ifx\inserttitlegraphic\@empty
+        \ifx\insertinstitute\@empty\else\usebeamertemplate*{institute}\fi
+      \fi
+    \end{flushright}
+    \vspace*{1mm}
+  \end{minipage}
+}
+
+% FRAME TITLE
+\setbeamertemplate{frametitle}{%
+    \nointerlineskip%
+    \begin{beamercolorbox}[%
+        wd=\paperwidth,%
+        sep=0pt,%
+        leftskip=\metropolis@frametitle@padding,%
+        rightskip=\metropolis@frametitle@padding,%
+        ]{frametitle}%
+    \metropolis@frametitlestrut@start%
+    \insertframetitle
+    \nolinebreak%
+    \metropolis@frametitlestrut@end%
+    \end{beamercolorbox}%
+}
+
+
+% FOOTLINE
+\setbeamertemplate{footline}{
+%	{\color{accentcolor}\hrule}
+	\begin{tiny}
+		\leavevmode%
+		\hbox{%
+			\begin{beamercolorbox}[wd=.40\paperwidth,ht=5ex,dp=4ex,left,leftskip=10pt]{foot1}%
+				\fontsize{8}{5}\selectfont
+				\insertshorttitle
+			\end{beamercolorbox}%
+			\begin{beamercolorbox}[wd=.20\paperwidth,ht=5ex,dp=4ex,center]{foot2}%
+				\fontsize{8}{5}\selectfont
+				\insertframenumber
+			\end{beamercolorbox}%
+			\begin{beamercolorbox}[wd=.40\paperwidth,ht=5ex,dp=4ex,right,rightskip=10pt]{foot4}%
+                \vspace{-1ex}
+				\includegraphics[scale=0.15]{logos/princeton_logo.pdf}
+			\end{beamercolorbox}%
+		}%
+    \end{tiny}
+    \vskip0pt
+}
+
+% Use TUM-color circles for itemization	
+\setbeamercolor{structure}{fg=accentcolor}
+\setbeamertemplate{itemize items}[circle]
+
+% BLOCKS
+\setbeamertemplate{blocks}[rounded][shadow=false]
+% Color recommendation:
+% - Use a *desaturated* Princeton-tinted title bar (less saturated than the frametitle)
+% - Use a very subtle warm tint for the body to avoid orange wash
+\colorlet{princeton@blocktitlebg}{accentcolor!14!backg}
+\colorlet{princeton@blocktitlefg}{accentcolor!90!black}
+\colorlet{princeton@blockbodybg}{accentcolor!4!backg}
+\setbeamercolor{block title}{fg=princeton@blocktitlefg, bg=princeton@blocktitlebg}
+\setbeamercolor{block body}{fg=black, bg=princeton@blockbodybg}
+\setbeamerfont{block title}{series=\bfseries}
+
+% Keep alerted/example blocks within the same Princeton palette (slightly darker)
+\colorlet{princeton@blocktitlebg@alerted}{accentcolor!20!backg}
+\colorlet{princeton@blocktitlebg@example}{accentcolor!17!backg}
+\setbeamercolor{block title alerted}{fg=princeton@blocktitlefg, bg=princeton@blocktitlebg@alerted}
+\setbeamercolor{block body alerted}{fg=black, bg=princeton@blockbodybg}
+\setbeamercolor{block title example}{fg=princeton@blocktitlefg, bg=princeton@blocktitlebg@example}
+\setbeamercolor{block body example}{fg=black, bg=princeton@blockbodybg}
+
+% Block padding (applies to regular/alerted/example blocks)
+% NOTE: Metropolis' own blocks use \@metropolis@blockskip, but this theme also
+% enables Beamer's [rounded][shadow=true] blocks. The default rounded blocks
+% have very small inner padding, so we override the block templates here.
+\makeatletter
+\newlength{\princeton@blockhpad}
+\newlength{\princeton@blockvpad}
+\setlength{\princeton@blockhpad}{1.2ex} % horizontal inner padding
+\setlength{\princeton@blockvpad}{0.4ex} % extra vertical padding (top/bottom)
+
+\setbeamertemplate{block begin}{%
+  \par\vskip\medskipamount%
+  \begin{beamerboxesrounded}[upper=block title,lower=block body,shadow=false,width=\textwidth]{%
+    \usebeamerfont*{block title}
+    \vspace*{\princeton@blockvpad}
+    \hspace*{\princeton@blockhpad}\insertblocktitle\hspace*{\princeton@blockhpad}%
+    \vspace*{\princeton@blockvpad}
+  }%
+  \begingroup%
+  \vspace*{\princeton@blockvpad}%
+  \leftskip=\princeton@blockhpad%
+  \rightskip=\princeton@blockhpad%
+}
+\setbeamertemplate{block end}{%
+  \par\vspace*{\princeton@blockvpad}%
+  \endgroup%
+  \end{beamerboxesrounded}%
+  \vskip\smallskipamount%
+}
+
+\setbeamertemplate{block alerted begin}{%
+  \par\vskip\medskipamount%
+  \begin{beamerboxesrounded}[upper=block title alerted,lower=block body alerted,shadow=false,width=\textwidth]{%
+    \usebeamerfont*{block title alerted}
+    \vspace*{\princeton@blockvpad}
+    \hspace*{\princeton@blockhpad}\insertblocktitle\hspace*{\princeton@blockhpad}%
+    \vspace*{\princeton@blockvpad}
+  }%
+  \begingroup%
+  \vspace*{\princeton@blockvpad}%
+  \leftskip=\princeton@blockhpad%
+  \rightskip=\princeton@blockhpad%
+}
+\setbeamertemplate{block alerted end}{%
+  \par\vspace*{\princeton@blockvpad}%
+  \endgroup%
+  \end{beamerboxesrounded}%
+  \vskip\smallskipamount%
+}
+
+\setbeamertemplate{block example begin}{%
+  \par\vskip\medskipamount%
+  \begin{beamerboxesrounded}[upper=block title example,lower=block body example,shadow=false,width=\textwidth]{%
+    \usebeamerfont*{block title example}
+    \vspace*{\princeton@blockvpad}
+    \hspace*{\princeton@blockhpad}\insertblocktitle\hspace*{\princeton@blockhpad}%
+    \vspace*{\princeton@blockvpad}
+  }%
+  \begingroup%
+  \vspace*{\princeton@blockvpad}%
+  \leftskip=\princeton@blockhpad%
+  \rightskip=\princeton@blockhpad%
+}
+\setbeamertemplate{block example end}{%
+  \par\vspace*{\princeton@blockvpad}%
+  \endgroup%
+  \end{beamerboxesrounded}%
+  \vskip\smallskipamount%
+}
+\makeatother
+
+
+
+% TOC (outline) hierarchy styling
+% Make subsections clearly nested under the section on "Section Outline" frames.
+\setbeamertemplate{section in toc}{%
+  \leavevmode%
+  {\usebeamerfont{section in toc}%
+   \textcolor{accentcolor}{\inserttocsectionnumber.}\enspace\inserttocsection\par}%
+}
+\setbeamertemplate{section in toc shaded}{%
+  \leavevmode%
+  {\usebeamerfont{section in toc}%
+   \textcolor{black!55}{\inserttocsectionnumber.}\enspace%
+   \textcolor{black!55}{\inserttocsection}\par}%
+}
+\setbeamertemplate{subsection in toc}{%
+  \leavevmode%
+  \leftskip=1.5em%
+  {\usebeamerfont{subsection in toc}%
+   \textcolor{accentcolor}{\raisebox{0.25ex}{\scriptsize$\bullet$}}%
+   \hskip0.8em%
+   \inserttocsubsection\par}%
+}
+\setbeamertemplate{subsection in toc shaded}{%
+  \leavevmode%
+  \leftskip=1.5em%
+  {\usebeamerfont{subsection in toc}%
+   \textcolor{black!45}{\raisebox{0.25ex}{\scriptsize$\bullet$}}%
+   \hskip0.8em%
+   \textcolor{black!45}{\inserttocsubsection}\par}%
+}
+\setbeamerfont{subsection in toc}{size=\small}
+
+\AtBeginSection{
+  \begin{frame}{Section Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+% custom emph tcolorbox environment
+\newenvironment{emphbox}[1][]{%
+    \begin{tcolorbox}[colback=princeton!5,colframe=princeton!70!black,boxrule=1pt]%
+        \begin{center}%
+            % Optional "header" line for the box (leave empty for none)
+            \if\relax\detokenize{#1}\relax\else#1\par\medskip\fi
+}{%
+        \end{center}%
+    \end{tcolorbox}%
+}
