@@ -1,3 +1,8 @@
+% Shared preamble for every deck in this repo.
+% Each deck has its own build root (<deck>/slides.tex) that \input's this file,
+% so a deck only ever contains its own content. Nothing here is deck-specific
+% except the \title/\author/\institute defaults at the bottom, which a deck's
+% slides.tex may override before \begin{document}.
 \documentclass[aspectratio=169, dvipsnames, theorems=ams, t]{beamer}
 \usetheme{princeton}
 
@@ -9,6 +14,10 @@
 
 \usepackage{amsmath,amssymb,amsfonts,mathtools,bm}
 \usepackage{graphicx}
+% Builds run with the working directory set to the deck folder, so shared assets
+% at the repo root (logos/, ...) sit one or two levels up depending on how deep
+% the deck lives. Deck-local paths (figures/, tables/) still resolve first.
+\graphicspath{{./}{../}{../../}}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{booktabs,arydshln}
@@ -57,16 +66,17 @@
 \newcommand{\mainblock}[2] {
 \begin{tcolorbox}[colback=princeton!5,colframe=princeton!90!black,title={\centering #1}]
 #2
-\end{tcolorbox}  
+\end{tcolorbox}
 }
 
 \newcommand{\boxedblock}[1] {
 \begin{tcolorbox}[colback=princeton!5,colframe=princeton!75!black]
 \centering
 #1
-\end{tcolorbox}  
+\end{tcolorbox}
 }
 
+% Defaults; override in a deck's slides.tex after \input{preamble.tex}.
 \title[\today]{Meeting}
 \subtitle{}
 \date{\today}
@@ -74,24 +84,3 @@
 \author{Anderson Lee}
 
 \institute{\includegraphics[height=0.05\textwidth]{logos/princeton_logo.pdf}}
-
-\begin{document}
-
-\begin{frame}[plain,b]
-    \titlepage
-\end{frame}
-
-% The section outline (\AtBeginSection -> "Outline") serves as the agenda
-% and as a divider before each section, so no separate TOC frame is needed.
-
-% set variable for the directory of the slides
-\newcommand{\slidesdir}{example}
-
-\input{\slidesdir/main.tex}
-
-% \begin{frame}[allowframebreaks]{References}
-%     \bibliographystyle{abbrvnat}
-%     \bibliography{\slidesdir/reference.bib}
-% \end{frame}
-
-\end{document}

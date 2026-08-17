@@ -1,0 +1,37 @@
+% !TEX root = slides.tex
+% Per-deck build root. Copy this file into a new date directory
+% (e.g. content/07-01-2026/slides.tex) and write that deck's main.tex next to it.
+% The PDF lands in content/<date>/out/slides.pdf (see latex.outDir in
+% .vscode/settings.json), so every deck keeps its own PDF.
+% NOTE: the ../../ below assumes this deck sits two levels down (content/<date>/).
+\input{../../preamble.tex}
+
+% Deck-specific overrides of the preamble defaults:
+% \title[\today]{Research Update}
+% \subtitle{}
+
+\begin{document}
+
+\begin{frame}[plain,b]
+    \titlepage
+\end{frame}
+
+% The section outline (\AtBeginSection -> "Outline") serves as the agenda
+% and as a divider before each section, so no separate TOC frame is needed.
+
+% Paths inside this deck resolve relative to this directory, so
+% \input{\slidesdir/...} and \includegraphics{\slidesdir/...} keep working.
+\newcommand{\slidesdir}{.}
+
+\input{\slidesdir/main.tex}
+
+% Uncomment if this deck has a reference.bib:
+% \begin{frame}[allowframebreaks]{References}
+%     \bibliographystyle{abbrvnat}
+%     \bibliography{\slidesdir/reference.bib}
+% \end{frame}
+
+% Uncomment if this deck has an appendix.tex:
+% \input{\slidesdir/appendix.tex}
+
+\end{document}

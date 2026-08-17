@@ -18,7 +18,11 @@
 \renewcommand{\familydefault}{\sfdefault}
 
 % ---- Colors ---------------------------------------------------------
-\definecolor{princeton}{RGB}{231,100,36}    % Princeton orange
+% Princeton orange, darkened from the logo's #ED6D0B for contrast on white.
+% The logo hue itself is kept in princetonlogo for anything that must match the
+% shield exactly.
+\definecolor{princeton}{RGB}{194,85,8}
+\definecolor{princetonlogo}{RGB}{237,109,11}
 \definecolor{princetonink}{RGB}{38,38,38}    % near-black body text
 \definecolor{princetonmute}{RGB}{120,120,120}% muted gray (footer, shaded)
 \colorlet{accentcolor}{princeton}
@@ -199,7 +203,7 @@
 \setbeamertemplate{section in toc}{%
   \leavevmode%
   {\usebeamerfont{section in toc}%
-   \textcolor{princeton}{\inserttocsectionnumber.}\enspace\inserttocsection\par}%
+   \inserttocsectionnumber.\enspace\inserttocsection\par}%
 }
 \setbeamertemplate{section in toc shaded}{%
   \leavevmode%
@@ -221,6 +225,10 @@
 }
 \setbeamerfont{section in toc}{size=\normalsize, series=\bfseries}
 \setbeamerfont{subsection in toc}{size=\small, series=\mdseries}
+% Entry names read as body text; the orange stays on the number and bullet only.
+% (Both default to parent=structure, i.e. orange, so this has to be explicit.)
+\setbeamercolor{section in toc}{fg=princetonink}
+\setbeamercolor{subsection in toc}{fg=princetonink}
 
 \AtBeginSection{%
   \begin{frame}{Outline}

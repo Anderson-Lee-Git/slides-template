@@ -1,5 +1,9 @@
-internal_slides.tex
-
-out/*
+out/
+**/out/
+# ...except the example deck's compiled PDF, tracked as a reference render.
+# Git needs the directory un-ignored before a file inside it can be negated.
+!example/out/
+example/out/*
+!example/out/slides.pdf
 content/*
 .DS_Store

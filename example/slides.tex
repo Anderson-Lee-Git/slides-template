@@ -1,0 +1,30 @@
+% !TEX root = slides.tex
+% Build root for the example deck. Builds to example/out/slides.pdf.
+% This deck sits one level down, hence ../ instead of the ../../ used by decks
+% under content/ (see _template/slides.tex).
+\input{../preamble.tex}
+
+\title[\today]{Meeting}
+\subtitle{}
+
+\begin{document}
+
+\begin{frame}[plain,b]
+    \titlepage
+\end{frame}
+
+% The section outline (\AtBeginSection -> "Outline") serves as the agenda
+% and as a divider before each section, so no separate TOC frame is needed.
+
+% Paths inside this deck resolve relative to this directory, so
+% \input{\slidesdir/...} and \includegraphics{\slidesdir/...} keep working.
+\newcommand{\slidesdir}{.}
+
+\input{\slidesdir/main.tex}
+
+% \begin{frame}[allowframebreaks]{References}
+%     \bibliographystyle{abbrvnat}
+%     \bibliography{\slidesdir/reference.bib}
+% \end{frame}
+
+\end{document}
