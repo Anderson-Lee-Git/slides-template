@@ -62,6 +62,25 @@
 \usetikzlibrary{shapes}
 \usetikzlibrary{overlay-beamer-styles}
 \usepgfplotslibrary{colorbrewer}
+% Libraries loaded here, not inside a figure file: \usetikzlibrary within a
+% frame defines its keys locally, so a second frame reusing the library would
+% not see them. The slides-figure skill assumes all of these are available.
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{patterns}
+\usetikzlibrary{fit}
+\usetikzlibrary{backgrounds}
+\usepgfplotslibrary{groupplots}
+
+% Color-blind-safe categorical palette (Okabe-Ito) for figures, available as
+% c0..c5 to both the deck and the slides-figure preview. Use `princeton` for the
+% series you want to emphasize; avoid pairing it with c3, which is close to it.
+\definecolor{c0}{HTML}{0072B2} % blue
+\definecolor{c1}{HTML}{E69F00} % amber
+\definecolor{c2}{HTML}{009E73} % green
+\definecolor{c3}{HTML}{D55E00} % vermillion
+\definecolor{c4}{HTML}{CC79A7} % purple
+\definecolor{c5}{HTML}{56B4E9} % sky blue
 
 \newcommand{\mainblock}[2] {
 \begin{tcolorbox}[colback=princeton!5,colframe=princeton!90!black,title={\centering #1}]

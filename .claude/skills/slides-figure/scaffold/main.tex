@@ -1,0 +1,28 @@
+% Shared LaTeX scaffolding for slide figures. DO NOT edit per-figure.
+% Renders one tikzpicture on a real 16:9 beamer frame using this repo's own
+% preamble.tex and princeton theme, so the preview IS the slide layout -- same
+% fonts, same colors, same usable area as the deck the figure ships in.
+% Drive it through build_figure.sh, which sets \figfile and TEXINPUTS for you.
+%
+%   pdflatex "\def\figfile{myfigure.tex}\input{main.tex}"
+%
+% Deliberately NOT a standalone document: a slide figure is \input into a frame,
+% not \includegraphics'd, so every package, TikZ library, and color it uses must
+% come from preamble.tex. Loading the same preamble here means a figure that
+% previews cleanly cannot fail in the real deck build.
+\input{preamble.tex}
+
+% Frame title for the preview. build_figure.sh overrides it with -t.
+\providecommand{\figtitle}{Figure Preview}
+
+\begin{document}
+
+% Titled frame, matching the common case. The body area below the title is
+% 14.9cm x 6.2cm -- if the figure overflows it, pdflatex reports an
+% "Overfull \vbox" and the preview shows the figure running off the slide.
+\begin{frame}{\figtitle}
+    \centering
+    \input{\figfile}
+\end{frame}
+
+\end{document}

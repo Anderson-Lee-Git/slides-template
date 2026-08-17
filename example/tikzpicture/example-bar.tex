@@ -1,0 +1,38 @@
+% Worked example for the slides-figure skill: a grouped bar chart sized for a
+% titled 16:9 frame. Copy this as a starting point.
+%
+% Numeric x positions + explicit xmin/xmax (NOT symbolic x coords) so the
+% margins are deterministic and the outer bars cannot crowd the y-axis.
+\begin{tikzpicture}
+    \begin{axis}[
+        width=12.2cm, height=5.4cm,
+        axis lines*=left,
+        clip=false,
+        ybar,
+        bar width=13pt,
+        xmin=0.4, xmax=3.6,
+        ymin=0, ymax=100,
+        xtick={1,2,3},
+        xticklabels={GSM8K, MMLU, HumanEval},
+        ytick={0,25,50,75,100},
+        ylabel={Accuracy (\%)},
+        tick align=outside,
+        tick style={color=princetonmute},
+        every axis label/.append style={font=\small},
+        tick label style={font=\small},
+        ymajorgrids=true,
+        grid style={draw=princetonmute!30, line width=0.4pt},
+        legend style={
+            at={(0.5,1.06)}, anchor=south, legend columns=-1,
+            draw=none, fill=none, font=\small, /tikz/every even column/.append style={column sep=8pt},
+        },
+        % Default ybar legend markers are thin slivers; draw solid swatches.
+        legend image code/.code={\draw[#1] (0cm,-0.09cm) rectangle (0.30cm,0.15cm);},
+        nodes near coords,
+        nodes near coords style={font=\scriptsize, color=princetonink},
+    ]
+        \addplot[draw=none, fill=c0] coordinates {(1,61) (2,68) (3,54)};
+        \addplot[draw=none, fill=princeton] coordinates {(1,74) (2,79) (3,71)};
+        \legend{Baseline, Ours}
+    \end{axis}
+\end{tikzpicture}
