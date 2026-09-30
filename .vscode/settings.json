@@ -26,8 +26,11 @@
             // kpathsea find the shared theme (.sty) at the workspace root from
             // either depth: example/ (../) or content/<date>/ (../../).
             // (%DIR% is NOT expanded inside env values, so use literal "../".)
+            // BibTeX runs inside out/, so BIBINPUTS="../:" lets it find the
+            // deck's reference.bib one level up.
             "env": {
-                "TEXINPUTS": "../:../../:"
+                "TEXINPUTS": "../:../../:",
+                "BIBINPUTS": "../:"
             }
         }
     ]
