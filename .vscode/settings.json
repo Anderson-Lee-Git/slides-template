@@ -23,8 +23,8 @@
                 "%DOC%"
             ],
             // Builds run with cwd = the deck folder, so a relative TEXINPUTS lets
-            // kpathsea find the shared theme (.sty) at the workspace root from
-            // either depth: example/ (../) or content/<date>/ (../../).
+            // kpathsea find the shared theme (.sty) at the top of latex/ from
+            // either depth: latex/example/ (../) or latex/content/<date>/ (../../).
             // (%DIR% is NOT expanded inside env values, so use literal "../".)
             // BibTeX runs inside out/, so BIBINPUTS="../:" lets it find the
             // deck's reference.bib one level up.

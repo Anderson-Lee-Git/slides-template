@@ -1,0 +1,33 @@
+# Shared defaults for every deck under slides-quarto/ (the Quarto counterpart of
+# preamble.tex + beamerthemeprinceton.sty). A deck's own YAML header overrides any
+# of these.
+author: Anderson Lee
+date: today
+date-format: "MMMM D, YYYY"        # "August 17, 2026", like \today
+csl: csl/abbrvnat-square.csl       # natbib [authoryear,square] + abbrvnat
+link-citations: true
+
+format:
+  revealjs:
+    theme: [default, _theme/princeton.scss]
+    css: _theme/fonts.css
+    template-partials:
+      - _theme/title-slide.html
+    filters:
+      - _theme/princeton.lua
+    include-in-header: _theme/princeton.html
+    html-math-method: mathjax      # replaced at load time by MathJax 4 + Euler
+    width: 1280                    # 16:9, matching aspectratio=169
+    height: 720
+    margin: 0
+    center: false                  # top-aligned frames, like beamer's [t]
+    auto-stretch: false            # a lone image keeps its size, like \includegraphics
+    footer: "{{< meta date >}}"   # beamer footline: \insertshorttitle = \today
+    slide-number: c                # plain frame number, centred in the footline
+    logo: _theme/princeton_logo.svg
+    transition: none
+    controls: false
+    menu: false                    # no hamburger button over the footline
+    progress: false
+    hash-type: number
+    preview-links: false

@@ -1,6 +1,6 @@
 ---
 name: slides-figure
-description: Create presentation-ready beamer figures as a single LaTeX/TikZ source that is \input into a slide. Use when asked to make, build, draw, plot, or render a figure/chart/plot/diagram for a deck, with Carlito font, projector-legible text, no overlapping labels, theme colors, and a fit inside the 16:9 frame. Sources always live in a tikzpicture/ subdirectory of the deck build directory (example/tikzpicture/, content/06-22-2026/tikzpicture/). Mandates rendering the figure onto a real slide, looking at it, and iterating until it passes the style bar.
+description: Create presentation-ready beamer figures for LaTeX decks under latex/ as a single LaTeX/TikZ source that is \input into a slide. Use when asked to make, build, draw, plot, or render a figure/chart/plot/diagram for a deck, with Carlito font, projector-legible text, no overlapping labels, theme colors, and a fit inside the 16:9 frame. Sources always live in a tikzpicture/ subdirectory of the deck build directory (example/tikzpicture/, content/06-22-2026/tikzpicture/). Mandates rendering the figure onto a real slide, looking at it, and iterating until it passes the style bar. For Quarto decks under quarto/, use quarto-figure instead.
 ---
 
 # Slide figure
@@ -18,7 +18,10 @@ looking is the most common failure — the example bar chart in this skill
 needed a fix on the second pass (legend markers rendered as thin slivers)
 that no amount of reading the source would have caught. Expect to iterate.
 
-Paths below are relative to the repo root.
+This is the LaTeX pathway's figure skill. The Quarto pathway has its own
+(`quarto/.claude/skills/quarto-figure/`). Both follow the shared style rules in
+`AGENTS.md` at the repo root; this file adds the TikZ mechanics and the sizes in
+beamer units. Paths below are relative to `latex/`.
 
 ## Environment requirements
 
@@ -125,6 +128,9 @@ from the deck directory. Use it rather than a bare relative path.
 
 ## Style checklist — the rendered slide must pass
 
+The shared rules (palette, casing, legibility, no overlap, consistency) are in
+`AGENTS.md` under *Shared style*, and they apply in full. In beamer terms:
+
 - **Fits the frame.** The body of a titled frame is **14.9cm × 6.2cm**. A
   full-width figure should target **≤ 12.5cm wide × ≤ 5.5cm tall** including
   its legend; go smaller when text shares the slide. `build_figure.sh` warns
@@ -137,45 +143,11 @@ from the deck directory. Use it rather than a bare relative path.
   zooming in on a projector.
 - **No overlap:** no text/label/legend overlaps another element, an axis
   line, or a bar. No bar or marker clipped at the plot boundary.
-- **Color:** use the theme colors and the shared color-blind-safe palette
-  from `preamble.tex` — `princeton` (the orange accent) for the series you
-  want to emphasize, `c0..c5` (Okabe-Ito) for everything else,
-  `princetonink` for text, `princetonmute` for grids/ticks. No raw
-  red/green/blue. Do not pair `princeton` with `c3` (vermillion); they read
-  as the same color.
-- **Text casing:** titles, axis labels, and legend entries use **Title
-  Case**; dataset, model, and method names use their **conventional
-  casing** — never auto-lowercased or sentence-cased. Write `GSM8K`,
-  `LLaMA`, `MMLU`, not `Gsm8k` / `Llama` / `Mmlu`. See the casing reference
-  below. When unsure of a name's canonical form, check its paper/repo
-  rather than guessing.
+- **Color:** the `AGENTS.md` palette, defined in `preamble.tex` as
+  `princeton`, `c0..c5`, `princetonink`, `princetonmute`.
+- **Text casing:** titles, axis labels and legend entries in Title Case;
+  names per the `AGENTS.md` casing reference.
 - **Clean axes:** `axis lines*=left`, light grid, tight margins.
-- **Consistency with the deck:** colors, casing, and terminology match the
-  surrounding slides. A figure that introduces its own vocabulary is a bug.
-
-### Casing reference
-
-Use the canonical form. Common ones (extend as needed; check the source
-when in doubt):
-
-| Wrong | Correct |
-|---|---|
-| Gsm8k, gsm8k | GSM8K |
-| Llama, LLAMA | LLaMA (LLaMA 2/3 use `Llama` in Meta's later cards — match the specific paper) |
-| Mmlu | MMLU |
-| Imagenet | ImageNet |
-| Bert, Gpt, Roberta | BERT, GPT, RoBERTa |
-| Humaneval | HumanEval |
-| Squad | SQuAD |
-| Cifar-10, Cifar10 | CIFAR-10 |
-| Wikitext | WikiText |
-| Hellaswag | HellaSwag |
-| Truthfulqa | TruthfulQA |
-| arxiv | arXiv |
-
-Acronyms stay uppercase (FLOPs, BLEU, ROUGE, F1). Title Case capitalizes
-the principal words but not short articles/prepositions/conjunctions
-("Accuracy on Held-out Tasks", not "Accuracy On Held-Out Tasks").
 
 ## The shared scaffolding (do not edit per-figure)
 

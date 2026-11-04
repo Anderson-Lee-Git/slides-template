@@ -1,0 +1,12 @@
+% Math macros, defined once for every deck. Plain LaTeX: princeton.lua hands this
+% file to MathJax before it typesets, so \newcommand / \DeclareMathOperator lines
+% work here exactly as in a beamer preamble (and the file could be \input there).
+%
+% preamble.tex loads bm; MathJax has no bm package, so alias it.
+\newcommand{\bm}[1]{\boldsymbol{#1}}
+
+% Examples used by example/slides.qmd -- replace with your own.
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}

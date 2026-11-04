@@ -12,6 +12,7 @@
 % ---- Required packages ----------------------------------------------
 \RequirePackage[normalem]{ulem}
 \RequirePackage{tikz}
+\RequirePackage{tcolorbox}
 
 % ---- Fonts: PowerPoint-like (Carlito mimics Calibri) ----------------
 \RequirePackage[sfdefault]{carlito}
@@ -148,7 +149,12 @@
 \setbeamercolor{enumerate item}{fg=princeton}
 
 % =====================================================================
-%  BLOCKS  (rounded, subtle Princeton tint)
+%  BOXES  -- three, each with its own job:
+%   block         soft tinted title bar, no border. exampleblock and the
+%                 theorem environments (theorem, definition, example, ...) use it.
+%   alertblock    the emphasised box: orange border, solid orange title bar.
+%                 \mainblock{title}{body} is shorthand for it.
+%   boxedblock    untitled, centred takeaway box with an orange border.
 % =====================================================================
 \definecolor{princetontintbg}{RGB}{250,248,246}
 \colorlet{princeton@blocktitlebg}{accentcolor!16!princetontintbg}
@@ -156,10 +162,8 @@
 \colorlet{princeton@blockbodybg}{accentcolor!5!princetontintbg}
 \setbeamercolor{block title}{fg=princeton@blocktitlefg, bg=princeton@blocktitlebg}
 \setbeamercolor{block body}{fg=princetonink, bg=princeton@blockbodybg}
-\setbeamercolor{block title alerted}{fg=princeton@blocktitlefg, bg=accentcolor!22!princetontintbg}
-\setbeamercolor{block body alerted}{fg=princetonink, bg=princeton@blockbodybg}
-\setbeamercolor{block title example}{fg=princeton@blocktitlefg, bg=accentcolor!18!princetontintbg}
-\setbeamercolor{block body example}{fg=princetonink, bg=princeton@blockbodybg}
+\setbeamercolor{block title example}{use=block title, fg=block title.fg, bg=block title.bg}
+\setbeamercolor{block body example}{use=block body, fg=block body.fg, bg=block body.bg}
 \setbeamerfont{block title}{series=\bfseries}
 \setbeamertemplate{blocks}[rounded][shadow=false]
 
@@ -191,10 +195,24 @@
 }
 \setbeamertemplate{block begin}{\princeton@blockbegin{block title}{block body}}
 \setbeamertemplate{block end}{\princeton@blockend}
-\setbeamertemplate{block alerted begin}{\princeton@blockbegin{block title alerted}{block body alerted}}
-\setbeamertemplate{block alerted end}{\princeton@blockend}
 \setbeamertemplate{block example begin}{\princeton@blockbegin{block title example}{block body example}}
 \setbeamertemplate{block example end}{\princeton@blockend}
+
+% alertblock: a tcolorbox, so it gets a border and a solid title bar. An empty
+% title (\begin{alertblock}{}) gives the box without a bar.
+\newtcolorbox{princeton@alertbox}[1][]{%
+  colback=princeton!5, colframe=princeton!90!black, #1}
+\setbeamertemplate{block alerted begin}{%
+  \ifx\insertblocktitle\@empty
+    \begin{princeton@alertbox}%
+  \else
+    \begin{princeton@alertbox}[title={\centering\insertblocktitle}]%
+  \fi}
+\setbeamertemplate{block alerted end}{\end{princeton@alertbox}}
+\newcommand{\mainblock}[2]{\begin{alertblock}{#1}#2\end{alertblock}}
+
+\newtcolorbox{boxedblock}{%
+  colback=princeton!5, colframe=princeton!75!black, before upper=\centering}
 \makeatother
 
 % =====================================================================
@@ -234,16 +252,4 @@
   \begin{frame}{Outline}
     \tableofcontents[currentsection]
   \end{frame}%
-}
-
-% =====================================================================
-%  custom emph tcolorbox environment  (requires tcolorbox in preamble)
-% =====================================================================
-\newenvironment{emphbox}[1][]{%
-  \begin{tcolorbox}[colback=princeton!5,colframe=princeton!70!black,boxrule=1pt]%
-    \begin{center}%
-      \if\relax\detokenize{#1}\relax\else#1\par\medskip\fi
-}{%
-    \end{center}%
-  \end{tcolorbox}%
 }

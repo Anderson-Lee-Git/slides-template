@@ -1,0 +1,221 @@
+/*-- scss:defaults --*/
+// Port of beamerthemeprinceton.sty. Sizes convert beamer pt on a 255pt-tall 16:9
+// frame to px on a 720px-tall slide (~2.8 px/pt): 11pt body -> 31px.
+
+// ---- Colors (same RGB as the .sty) ----
+$princeton:      rgb(194, 85, 8);     // darkened logo orange, used for text
+$princeton-logo: rgb(237, 109, 11);   // exact shield hue
+$princeton-ink:  rgb(38, 38, 38);     // near-black body text
+$princeton-mute: rgb(120, 120, 120);  // footer, shaded outline entries
+$princeton-tint: rgb(250, 248, 246);
+
+// Okabe-Ito figure palette (c0..c5 in preamble.tex)
+$c0: #0072B2; $c1: #E69F00; $c2: #009E73; $c3: #D55E00; $c4: #CC79A7; $c5: #56B4E9;
+
+// ---- Fonts: Carlito (Calibri metric clone), bundled in _theme/fonts ----
+$font-family-sans-serif: "Carlito", "Calibri", sans-serif;
+$presentation-font-size-root: 31px;          // \normalsize 11pt
+$presentation-line-height: 1.2;
+$presentation-heading-font: $font-family-sans-serif;
+$presentation-heading-color: $princeton;
+$presentation-heading-font-weight: 700;
+$presentation-heading-text-transform: none;
+$presentation-heading-letter-spacing: normal;
+$presentation-heading-line-height: 1.15;
+$presentation-h2-font-size: 1.31em;          // \Large 14.4pt
+$presentation-h3-font-size: 1.09em;          // \large 12pt
+$presentation-h4-font-size: 1em;
+
+$body-bg: #fff;
+$body-color: $princeton-ink;
+$link-color: $princeton;
+$presentation-block-margin: 0.45em;
+$presentation-list-bullet-color: $princeton;
+
+$code-color: $princeton-ink;
+$code-block-bg: $princeton-tint;
+$code-block-border-color: rgba($princeton, 0.25);
+
+/*-- scss:functions --*/
+@function tint($pct) { @return mix($princeton, $princeton-tint, $pct); }
+
+/*-- scss:rules --*/
+// Carlito @font-face rules live in fonts.css: url()s in this file would break once
+// Quarto compiles it into libs/revealjs/dist/theme/.
+
+$margin: 44px;   // text margin left/right = 0.55cm
+
+// ---- Frame layout: 0.55cm headline gap, tight side margins ----
+.reveal .slides > section,
+.reveal .slides > section > section {
+  padding: 40px $margin 64px $margin !important;  // bottom keeps clear of the footline
+  box-sizing: border-box;
+  height: 100%;
+}
+
+// ---- Frame title: orange bold text with a thin orange rule, no bar ----
+.reveal .slide h2 {
+  margin: 0 0 0.6em 0;
+  padding-bottom: 0.25em;
+  border-bottom: 2px solid $princeton;
+  text-align: left;
+}
+.reveal .slides section { text-align: left; }
+// carlito.sty's default figures are old-style and proportional; the web font has
+// both (onum, pnum), so numbers read like the PDF's ("2026", equation numbers).
+.reveal { font-variant-numeric: oldstyle-nums proportional-nums; }
+.reveal code, .reveal pre { font-variant-numeric: normal; }
+
+// ---- Lists: small orange bullet, orange en dash for sub-items, tight indent ----
+.reveal ul, .reveal ol { margin-left: 1.3em; display: block; }
+.reveal ul ul, .reveal ol ol, .reveal ul ol, .reveal ol ul { margin-left: 1.1em; }
+.reveal li { margin: 0.12em 0; }
+.reveal ul li::marker { color: $princeton; font-size: 0.8em; }
+.reveal ul ul li { list-style-type: "–  "; font-size: 0.92em; }
+.reveal ul ul li::marker { color: $princeton; }
+.reveal ol li::marker { color: $princeton; }
+
+.reveal strong { font-weight: 700; }
+.reveal .alert, .reveal em.alert { color: $princeton; font-style: normal; }
+.reveal .muted { color: $princeton-mute; }
+.reveal .c0 { color: $c0; } .reveal .c1 { color: $c1; } .reveal .c2 { color: $c2; }
+.reveal .c3 { color: $c3; } .reveal .c4 { color: $c4; } .reveal .c5 { color: $c5; }
+
+// ---- Title slide (frame [plain,b]) ----
+// (four classes: must outrank Quarto's centred section.quarto-title-block rules;
+//  Quarto also adds .center, so cancel reveal's vertical-centring offset)
+.reveal .slides section.princeton-title.quarto-title-block {
+  &.present { display: flex !important; }
+  top: 0 !important;
+  flex-direction: column;
+  padding-bottom: 14px !important;
+  text-align: left;
+  .title-block { margin: auto 0; }      // vertically centred title block
+  h1.title {
+    font-size: 49px;                    // \LARGE 17.28pt
+    color: $princeton;
+    font-weight: 700;
+    margin: 0;
+    text-align: left;
+  }
+  .subtitle { font-size: 34px; color: $princeton-ink; margin: 0.45em 0 0 0; }
+  .title-rule { border-top: 2px solid $princeton; margin: 0.85em 0; }
+  .author { font-size: 31px; color: $princeton-ink; margin: 0; }
+  .date { font-size: 28px; color: $princeton-mute; margin: 0.15em 0 0 0; }
+  .title-graphic { align-self: flex-end; height: 50px; margin: 0; }
+}
+
+// ---- Footline: short title (left) | frame number (centre) | logo (right) ----
+.reveal .footer {
+  position: absolute;
+  left: $margin; bottom: 14px;
+  text-align: left !important;
+  width: auto !important;
+  font-size: 22px !important;         // \scriptsize 8pt
+  color: $princeton-mute !important;
+  z-index: 30;
+}
+.reveal .slide-number {
+  position: absolute;
+  left: 50% !important; right: auto !important; bottom: 14px !important; top: auto !important;
+  transform: translateX(-50%);
+  background: none !important;
+  color: $princeton-mute !important;
+  font-family: $font-family-sans-serif;
+  font-size: 22px !important;
+  a { color: inherit !important; }
+}
+.reveal .slide-logo {
+  position: absolute;
+  right: $margin !important; bottom: 12px !important;
+  height: 28px !important;
+  max-height: none !important;
+  max-width: none !important;
+}
+// Title slide is [plain]: no footline
+.is-title-slide .reveal .footer,
+.is-title-slide .reveal .slide-number,
+.is-title-slide .reveal .slide-logo { display: none !important; }
+
+// ---- Section outline slide (\AtBeginSection -> Outline + TOC) ----
+.reveal .outline {             // beamer centres the TOC in the frame body
+  height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.reveal .outline ol {
+  list-style: none;
+  margin: 0;
+  counter-reset: sec;
+}
+.reveal .outline ol > li {
+  counter-increment: sec;
+  font-weight: 700;
+  margin: 0.25em 0;
+  &::before { content: counter(sec) ".\2002"; color: $princeton; }
+  &.shaded, &.shaded::before { color: $princeton-mute; }
+}
+
+// ---- Boxes: the three of beamerthemeprinceton.sty ----
+// block (= exampleblock): soft tinted title bar, no border
+.reveal .pblock {
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 0.5em 0;
+  background: tint(5%);
+  > .pblock-title {
+    background: tint(16%);
+    color: mix($princeton, black, 92%);
+    font-weight: 700;
+    padding: 0.15em 0.6em;
+  }
+  > .pblock-body { padding: 0.25em 0.6em; > :first-child { margin-top: 0; } > :last-child { margin-bottom: 0; } }
+}
+
+// alertblock (= mainblock): orange border, solid orange title bar.
+// boxedblock: untitled, centred, lighter border.
+.reveal .tcbox {
+  border: 3px solid mix($princeton, black, 90%);   // tcolorbox boxrule 0.5mm
+  border-radius: 8px;                              // tcolorbox arc 1mm
+  overflow: hidden;
+  margin: 0.4em 0;
+  background: mix($princeton, white, 5%);
+  > .tcbox-title {
+    background: mix($princeton, black, 90%);
+    color: white;
+    text-align: center;
+    padding: 0.12em 0.6em;
+  }
+  > .tcbox-body { padding: 0.35em 0.6em; > :first-child { margin-top: 0; } > :last-child { margin-bottom: 0; } }
+  &.boxedblock { border-color: mix($princeton, black, 75%); > .tcbox-body { text-align: center; } }
+}
+
+// ---- Figures, tables, columns ----
+.reveal .columns { display: flex; gap: 1.2em; }
+.reveal .columns > .column { flex: 1 1 0; }
+.reveal table { font-size: 0.85em; }
+.reveal table th { border-bottom: 1.5px solid $princeton-ink; }
+.reveal figcaption, .reveal .caption { color: $princeton-mute; font-size: 0.75em; }
+.reveal video { max-width: 100%; display: block; }
+.reveal video.center { margin-left: auto; margin-right: auto; }
+
+// ---- Video background slide: white text over dark footage ----
+.reveal .slides section.video-overlay {
+  color: white;
+  h2 { color: white; border-bottom-color: rgba(white, 0.8); }
+  code { color: white; background: rgba(black, 0.35); }
+  text-shadow: 0 1px 4px rgba(black, 0.6);
+}
+
+// \eqref / \ref links read as body text, as in the PDF
+.reveal mjx-container a, .reveal mjx-container a *, .reveal a.quarto-xref { color: inherit !important; }
+
+// ---- References ----
+.reveal #refs, .reveal .references {
+  font-size: 22px;                     // beamer bibliography at \footnotesize-ish
+  line-height: 1.25;
+  .csl-entry { margin-bottom: 0.45em; font-size: inherit; }
+  a { color: $princeton; }
+}
+.reveal a.citation, .reveal .citation a { color: inherit; }

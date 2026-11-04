@@ -1,0 +1,12 @@
+# Rendered output sits next to each .qmd; only sources are tracked.
+*.html
+!_theme/*.html
+*_files/
+.quarto/
+**/*.quarto_ipynb
+# Figure previews and build logs (quarto-figure skill)
+out/
+# Decks themselves, as in latex/ (content/* is ignored there too).
+content/*
+
+/.quarto/

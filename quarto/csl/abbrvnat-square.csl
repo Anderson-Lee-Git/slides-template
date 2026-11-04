@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Mirrors the Beamer preamble's citation setup:
+    \usepackage[authoryear,square]{natbib} + \bibliographystyle{abbrvnat}
+  In-text   @key   -> Mialon et al. [2024]          (natbib \citet)
+  Bracketed [@key] -> [Mialon et al., 2024]          (natbib \citep)
+  Bibliography: abbreviated given names, alphabetical, abbrvnat punctuation.
+-->
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0"
+       demote-non-dropping-particle="sort-only" default-locale="en-US">
+  <info>
+    <title>abbrvnat (natbib authoryear, square brackets)</title>
+    <id>princeton-slides-abbrvnat-square</id>
+    <updated>2026-11-04T00:00:00+00:00</updated>
+  </info>
+
+  <macro name="author-short">
+    <names variable="author">
+      <name form="short" and="text" delimiter=", " initialize-with=". "/>
+      <substitute>
+        <names variable="editor"/>
+        <text variable="title" form="short"/>
+      </substitute>
+    </names>
+  </macro>
+
+  <macro name="author-full">
+    <names variable="author">
+      <name and="text" delimiter=", " delimiter-precedes-last="always"
+            initialize-with=". "/>
+      <substitute>
+        <names variable="editor"/>
+      </substitute>
+    </names>
+  </macro>
+
+  <macro name="year">
+    <date variable="issued">
+      <date-part name="year"/>
+    </date>
+  </macro>
+
+  <citation et-al-min="3" et-al-use-first="1" disambiguate-add-year-suffix="true"
+            collapse="year">
+    <layout prefix="[" suffix="]" delimiter="; ">
+      <group delimiter=", ">
+        <text macro="author-short"/>
+        <text macro="year"/>
+        <group delimiter=" ">
+          <label variable="locator" form="short" text-case="capitalize-first"/>
+          <text variable="locator"/>
+        </group>
+      </group>
+    </layout>
+  </citation>
+
+  <bibliography entry-spacing="0" hanging-indent="false">
+    <sort>
+      <key macro="author-full"/>
+      <key macro="year"/>
+    </sort>
+    <layout suffix=".">
+      <group delimiter=". ">
+        <text macro="author-full"/>
+        <text variable="title"/>
+        <choose>
+          <if type="article-journal article-magazine article-newspaper">
+            <group delimiter=", ">
+              <text variable="container-title" font-style="italic"/>
+              <group>
+                <text variable="volume"/>
+                <text variable="issue" prefix="(" suffix=")"/>
+                <text variable="page" prefix=":"/>
+              </group>
+              <text macro="year"/>
+            </group>
+          </if>
+          <else-if type="paper-conference chapter">
+            <group delimiter=", ">
+              <text variable="container-title" font-style="italic" prefix="In "/>
+              <text variable="page" prefix="pages "/>
+              <text macro="year"/>
+            </group>
+          </else-if>
+          <else-if type="book report thesis">
+            <group delimiter=", ">
+              <text variable="publisher"/>
+              <text macro="year"/>
+            </group>
+          </else-if>
+          <else>
+            <!-- @misc: howpublished arrives as `publisher` -->
+            <group delimiter=", ">
+              <text variable="publisher"/>
+              <text variable="URL"/>
+              <text macro="year"/>
+            </group>
+          </else>
+        </choose>
+      </group>
+    </layout>
+  </bibliography>
+</style>

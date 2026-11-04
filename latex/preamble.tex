@@ -34,8 +34,6 @@
 \usepackage{relsize}
 \usepackage{tabto}
 \usepackage{filecontents}
-\usepackage{framed}
-\usepackage{tcolorbox}
 \usepackage{array}
 \usepackage{xcolor}
 \usepackage{pgfplots}
@@ -82,18 +80,7 @@
 \definecolor{c4}{HTML}{CC79A7} % purple
 \definecolor{c5}{HTML}{56B4E9} % sky blue
 
-\newcommand{\mainblock}[2] {
-\begin{tcolorbox}[colback=princeton!5,colframe=princeton!90!black,title={\centering #1}]
-#2
-\end{tcolorbox}
-}
-
-\newcommand{\boxedblock}[1] {
-\begin{tcolorbox}[colback=princeton!5,colframe=princeton!75!black]
-\centering
-#1
-\end{tcolorbox}
-}
+% Boxes (block, alertblock / \mainblock, boxedblock) are defined in the theme.
 
 % Defaults; override in a deck's slides.tex after \input{preamble.tex}.
 \title[\today]{Meeting}

@@ -1,0 +1,141 @@
+<script>
+// Quarto's reveal.js template hard-wires reveal's MathJax 2 plugin. To match the
+// beamer PDF we need MathJax 4, so swap the plugin; reveal's math.js assigns
+// window.RevealMath, and we keep that assignment from replacing ours.
+//
+// The beamer PDF mixes fonts: beamer's default font theme puts Latin letters and
+// digits in the text font (Carlito) and operator names in CM Sans; eulervm gives
+// Greek, brackets, = +, \mathcal and big operators in Euler; AMS fonts give
+// \mathbb and the slanted \leq/\geq. So: MathJax with its Euler font, plus a
+// filter (carlitoTokens) that sends the Carlito tokens to the browser's font.
+(function () {
+  var MJ = 'https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js';
+  var EULER = 'https://cdn.jsdelivr.net/npm/@mathjax/mathjax-euler-font-extension@4.1.3';
+
+  // MathJax 4.1.3 bug: the Euler extension's dynamically loaded glyph files (Greek)
+  // get the base font's woff2 directory. Point those @font-face rules back at the
+  // extension once the first typeset has created them.
+  function fixEulerURLs() {
+    [].forEach.call(document.styleSheets, function (sheet) {
+      var rules; try { rules = sheet.cssRules; } catch (e) { return; }
+      for (var i = 0; i < rules.length; i++) {
+        var css = rules[i].cssText;
+        if (/@font-face/.test(css) && /mathjax-modern-font@[^/]+\/chtml\/woff2\/mjx-ne-/.test(css)) {
+          sheet.deleteRule(i);
+          sheet.insertRule(css.replace(/https:[^"]*mathjax-modern-font@[^/]+\/chtml/, EULER + '/chtml'), i);
+        }
+      }
+    });
+  }
+
+  // Which font beamer uses for each token (`pdffonts` + pdfminer on the PDF):
+  //   Latin letters x, f        Carlito italic      \mathbf{x}    Carlito bold
+  //   digits 3.14               Carlito             \bm{x}        Carlito bold italic
+  //   operator names min, sin   CM Sans (CMSS)      everything else (Greek, ( ) = +,
+  //   \mathrm{d}                CM Roman            commas, \mathcal, symbols): Euler/AMS
+  // MathJax's math font covers the last column. Operator names go to upright
+  // Carlito, the closest sans we can name: switching them to MathJax's sans variant
+  // after parsing loses the thin space in "\sin x".
+  function carlito(node, style, weight) {
+    node.attributes.unset('mathvariant');   // an explicit variant would override fontfamily
+    node.attributes.set('fontfamily', 'Carlito');
+    node.attributes.set('fontstyle', style);
+    node.attributes.set('fontweight', weight);
+  }
+  function carlitoTokens(args) {
+    args.data.root.walkTree(function (node) {      // args.data: the parse options
+      if (!node.isToken) return;
+      var text = node.getText();
+      var variant = node.attributes.getExplicit('mathvariant');
+      if (node.isKind('mn')) {
+        if (!variant && /^[0-9.]+$/.test(text)) carlito(node, 'normal', 'normal');
+      } else if ((node.isKind('mi') || node.isKind('mo')) && /^[A-Za-z]+$/.test(text)) {
+        if (text.length > 1) {        // \sin (mi), \min (mo), \operatorname{..}
+          if (!variant || variant === 'normal') carlito(node, 'normal', 'normal');
+        } else if (node.isKind('mo')) return;
+        else if (!variant) carlito(node, 'italic', 'normal');
+        else if (variant === 'bold') carlito(node, 'normal', 'bold');
+        else if (variant === 'bold-italic') carlito(node, 'italic', 'bold');
+      }
+    });
+  }
+
+  // MathJax measures Carlito text as it typesets, so the faces must be loaded first.
+  function carlitoLoaded() {
+    if (!document.fonts) return Promise.resolve();
+    return Promise.all(['', 'italic ', 'bold ', 'italic bold '].map(function (s) {
+      return document.fonts.load(s + '16px Carlito');
+    }));
+  }
+
+  var plugin = function () {
+    return {
+      id: 'math',
+      init: function (deck) {
+        window.MathJax = {
+          loader: {
+            load: ['[tex]/mathtools', '[mathjax-euler-extension]/chtml'],
+            paths: { 'mathjax-euler-extension': EULER }
+          },
+          tex: {
+            packages: { '[+]': ['mathtools'] },
+            inlineMath: [['\\(', '\\)']],
+            displayMath: [['\\[', '\\]']],
+            tags: 'ams',                    // \begin{equation}\label{..} + \eqref work
+            macros: {                       // eulervm's slanted inequalities
+              leq: '\\leqslant', le: '\\leqslant', geq: '\\geqslant', ge: '\\geqslant'
+            }
+          },
+          output: {
+            font: 'mathjax-modern',         // the base font the Euler extension extends
+            mtextInheritFont: true          // \text{..} and equation numbers in Carlito
+          },
+          startup: {
+            ready: function () {
+              MathJax.startup.defaultReady();
+              // Late priority: \boldsymbol sets its variant in an earlier post-filter.
+              MathJax.startup.input[0].postFilters.add(carlitoTokens, 100);
+            },
+            pageReady: function () {
+              // Define the macros from _theme/macros.tex before the first typeset.
+              if (window.PRINCETON_TEX_MACROS) MathJax.tex2mml(window.PRINCETON_TEX_MACROS);
+              // MathJax measures Carlito tokens next to their equation and caches the
+              // width; reveal keeps far-away slides at display:none, where every width
+              // is 0. So lay all slides out (still invisible) while typesetting.
+              var reveal = deck.getRevealElement();
+              return carlitoLoaded()
+                .then(function () {
+                  reveal.classList.add('mjx-typesetting');
+                  return MathJax.startup.defaultPageReady();
+                })
+                .then(function () {
+                  reveal.classList.remove('mjx-typesetting');
+                  fixEulerURLs();
+                  deck.layout();
+                });
+            }
+          }
+        };
+        return new Promise(function (resolve) {
+          var s = document.createElement('script');
+          s.src = MJ;
+          s.async = true;
+          s.onload = resolve;
+          s.onerror = resolve;            // never block the deck on a CDN failure
+          document.head.appendChild(s);
+        });
+      }
+    };
+  };
+  var style = document.createElement('style');
+  style.textContent = '.reveal.mjx-typesetting .slides section { display: block !important; visibility: hidden; }';
+  document.head.appendChild(style);
+
+  Object.defineProperty(window, 'RevealMath', {
+    configurable: true,
+    get: function () { return plugin; },
+    set: function () {}
+  });
+})();
+
+</script>
