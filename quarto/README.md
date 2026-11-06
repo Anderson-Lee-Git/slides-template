@@ -11,18 +11,77 @@ LaTeX pathway are in [`../AGENTS.md`](../AGENTS.md).
 
 `example/slides.qmd` is the reference deck and shows every feature.
 
+## Setup on a machine without Quarto (e.g. a Slurm cluster)
+
+Tested on Princeton's della cluster (RHEL 9, no root, no `quarto` module), with
+Quarto 1.11.9 and Playwright's Chromium 1248. Nothing else had to change: once
+these two tools were installed, the example deck and `build_figure.sh` worked.
+Do this on the login node, because compute nodes have no internet.
+
+1. **Install Quarto from the release tarball** into a large filesystem, not `$HOME`:
+
+   ```bash
+   V=1.11.9; DEST=/scratch/gpfs/<group>/<netid>/quarto-cli
+   mkdir -p $DEST && cd $DEST
+   curl -sL https://github.com/quarto-dev/quarto-cli/releases/download/v$V/quarto-$V-linux-amd64.tar.gz | tar xz
+   export PATH=$DEST/quarto-$V/bin:$PATH     # add this to ~/.bashrc; build_figure.sh calls `quarto`
+   quarto check
+   ```
+
+   Quarto ships its own pandoc and Deno, so the conda `pandoc` doesn't matter.
+   `quarto check` says "Chrome Headless Shell: not installed". You can ignore
+   that: it's only for Quarto's own PDF/diagram output, which these decks don't use.
+
+2. **Install Playwright's Chromium** (needed by `build_figure.sh` and for slide
+   screenshots). It downloads ~120 MB, so if `$HOME` is small, put the browsers
+   somewhere else with `PLAYWRIGHT_BROWSERS_PATH`. Every later Playwright run
+   needs the same variable set, so export it in `~/.bashrc`:
+
+   ```bash
+   export PLAYWRIGHT_BROWSERS_PATH=/scratch/gpfs/<group>/<netid>/.cache/ms-playwright
+   uv run --no-project --with playwright playwright install chromium
+   ```
+
+   Headless Chromium launched on RHEL 9 without any extra system libraries.
+   `uv` caches its environments in `UV_CACHE_DIR`; point that off `$HOME` too
+   if needed.
+
+3. **Viewing a deck from your laptop.** `quarto preview` on the cluster can't open
+   a browser. Run it on a fixed port and forward that port:
+
+   ```bash
+   quarto preview content/<date>/slides.qmd --no-browser --port 4321
+   # on the laptop: ssh -N -L 4321:localhost:4321 <netid>@<login-node>
+   # then open http://localhost:4321/content/<date>/slides.html
+   ```
+
+   VS Code / Cursor Remote-SSH forwards the port automatically. Login nodes are
+   shared, so pick an unusual port. If it's already taken, `python3 -m http.server`
+   fails with "Address already in use", and Playwright then reports
+   `Reveal is not defined` because no deck loaded. Alternatively, copy the
+   rendered `slides.html`, `slides_files/` **and** `_theme/` to your laptop,
+   keeping the same relative layout (see the next section for why).
+
 ## Starting a deck
 
 ```bash
 mkdir -p content/<date>
 cp _template/slides.qmd content/<date>/slides.qmd
+touch content/<date>/reference.bib
 ```
 
 `content/*` is gitignored, as the decks are private. A deck inherits `_quarto.yml`
 (author, `date: today`, theme, CSL), the way a beamer deck inherits `preamble.tex`.
-The template reads `bibliography: ../reference.bib`, i.e. `content/reference.bib`;
-change that line to use another `.bib`. Deck assets live inside the deck folder:
-`media/` for video, `figures/` for figures.
+Everything else belongs to the deck and lives in its folder, so a deck folder is
+self-contained:
+
+- **`reference.bib`**: each deck has its own; there is no shared bibliography. The
+  template reads `bibliography: reference.bib` (relative to `slides.qmd`). To reuse
+  entries from an older deck, copy them in. **If the file doesn't exist, the render
+  fails** with `File 'reference.bib' not found in resource path`, even for a deck
+  with no citations: create it (an empty file is fine) or delete the
+  `bibliography:` line.
+- `media/` for video, `figures/` for figures.
 
 ## Building a deck
 
@@ -33,18 +92,35 @@ quarto render  content/<date>/slides.qmd   # -> content/<date>/slides.html (+ sl
 
 - `quarto render` with no file renders every deck; folders starting with `_` are
   skipped.
+- The rendered HTML is **not self-contained**: it links the font CSS and the logo
+  from the project's `_theme/` (`../_theme/…` for `example/`, `../../_theme/…` for
+  `content/<date>/`). To serve or copy a deck, include the `quarto/` root, or
+  Carlito silently falls back to another font and the logo disappears.
 - Open the HTML in a browser: `F` for full screen, `S` for speaker notes. For a PDF,
   add `?print-pdf` to the URL and print from Chrome.
 - Math loads MathJax 4 from jsDelivr, so it needs a network connection when the
   deck opens.
 - Nothing warns when content runs off a slide (no `Overfull \vbox`), so check every
-  slide by eye. If a slide is too full, split it; `{.scrollable}` is for the
-  References slide only.
+  slide by eye. If a slide is too full, split it.
+- **References over several slides.** A `## References` slide holding `::: {#refs}`
+  is split into "References", "References (cont.)", … by `_theme/refs-pages.lua`
+  (like beamer's `[allowframebreaks]`), with entries spread evenly and each citation
+  linking to the slide that holds its entry. Mark the slide `{.scrollable}` to keep
+  one scrolling slide instead. The split estimates entry heights from text length;
+  if a slide overflows, lower `refs-lines` (default 16.5) in the deck's YAML.
+  The filter runs citeproc itself (Quarto would otherwise run it after all
+  filters) and then sets `suppress-bibliography`, so the second pass adds nothing.
 
 ## Inspecting a slide
 
-To look at slide N, render the deck, serve its folder (`python3 -m http.server`),
-and screenshot it at 1280×720 with Playwright after `Reveal.slide(N-1)`. For a
+To look at slide N, render the deck, serve the `quarto/` directory (not just the
+deck folder, which would 404 `_theme/fonts.css`; see above) with
+`python3 -m http.server <port>`, open `http://localhost:<port>/content/<date>/slides.html`,
+and screenshot it at 1280×720 with Playwright after `Reveal.slide(N-1)`. Wait for
+`networkidle` plus about a second, so MathJax and its Euler fonts finish loading. The
+browser console prints harmless warnings ("mathjax-euler-extension uses 4.0.0 of
+MathJax") and a 404 for `mathjax-modern-font/…/mjx-ne-gk.woff2`. Greek still
+renders in Euler. For a
 figure, the `quarto-figure` skill's `build_figure.sh` does all of this for you.
 Headless Playwright Chromium can't decode H.264, so `.mp4` slides show black there.
 Real browsers play them.
@@ -71,7 +147,7 @@ A figure is one matplotlib script, `<deck>/figures/<name>.py`, styled by
 | `\begin{columns}` | `:::: columns` / `::: {.column width="50%"}` |
 | `\cite{k}` = `\citet` | `@k` → Mialon et al. [2024] |
 | `\citep{k}` | `[@k]` → [Mialon et al., 2024]; `[@k, Fig. 2]` for a locator |
-| bibliography frame | `## References {.scrollable}` + `::: {#refs}` `:::` |
+| bibliography frame (`allowframebreaks`) | `## References` + `::: {#refs}` `:::` (add `{.scrollable}` for one scrolling slide) |
 | `\includegraphics[width=.6\textwidth]{f}` | `![](f.png){width="60%"}` |
 | `\textcolor{c0}{x}` | `[x]{.c0}` (Okabe–Ito `c0`…`c5`) |
 
@@ -126,6 +202,7 @@ synthetic; `example/media/make-demo-media.sh` regenerates them.
 | `_theme/princeton.scss` | colours, fonts, frame title, footline, blocks |
 | `_theme/title-slide.html` | title-slide layout (title, rule, author, date, logo bottom right) |
 | `_theme/princeton.lua` | Outline frames, block/box divs, video tags, macro loading |
+| `_theme/refs-pages.lua` | splits the bibliography over several slides |
 | `_theme/princeton.html` | MathJax 4 loader and the font mapping that matches beamer's math |
 | `_theme/macros.tex` | math macros |
 | `_theme/princeton_mpl.py` | matplotlib style for figures |

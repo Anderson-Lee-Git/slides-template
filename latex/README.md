@@ -33,6 +33,9 @@ TEXINPUTS="../:../../:" BIBINPUTS="../:" latexmk -pdf -interaction=nonstopmode -
   missing file drops LaTeX into an interactive prompt and the build hangs
   silently — `File 'beamerthemeprinceton.sty' not found` is the usual symptom of
   a missing `TEXINPUTS`.
+- Each deck has its own `reference.bib` next to its `slides.tex`
+  (`content/<date>/reference.bib`); there is no shared bibliography. To reuse
+  entries from an older deck, copy them in.
 - `BIBINPUTS="../:"` is needed for decks with a `reference.bib`: latexmk runs
   BibTeX inside `out/`, so without it `slides.blg` reports `I couldn't open
   database file ./reference.bib` and citations render as `[?]`. Reference the
