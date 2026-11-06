@@ -17,6 +17,9 @@ new deck is for, ask. Don't convert a deck between pathways unless asked.
 - No file in one pathway reads a file from the other. Each has its own theme,
   `_template/`, `example/` reference deck, `content/<date>/` decks (gitignored),
   logo, and skills.
+- Each deck folder is self-contained: its own `reference.bib`, `figures/` and
+  (Quarto) `media/` live inside `content/<date>/`. Never share a bibliography
+  between decks; copy the entries a new deck needs.
 - The look is defined twice, so a style change has to be made in both:
 
 | What | `latex/` | `quarto/` |

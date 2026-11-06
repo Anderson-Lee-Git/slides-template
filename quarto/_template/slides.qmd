@@ -4,7 +4,7 @@
 # Everything not set here (author, date, theme, CSL) comes from
 # ../_quarto.yml, the way preamble.tex supplies defaults to a beamer deck.
 title: "Meeting"
-bibliography: ../reference.bib   # slides-quarto/content/reference.bib
+bibliography: reference.bib   # content/<date>/reference.bib, next to this file
 # subtitle: ""
 # footer: "Short title"   # default: the date, like \insertshorttitle = \today
 # outline: false          # plain section slides instead of the Outline frame
