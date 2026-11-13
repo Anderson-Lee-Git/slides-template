@@ -33,3 +33,4 @@ format:
     progress: false
     hash-type: number
     preview-links: false
+    embed-resources: true          # one self-contained HTML: theme, fonts, logo, images, video
