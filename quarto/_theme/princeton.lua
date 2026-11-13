@@ -84,11 +84,44 @@ local function outline_slides(blocks)
   return out
 end
 
+-- embed-resources inlines src/href but not reveal's slide-background attributes,
+-- so a background-video / background-image would still load from disk. Inline
+-- local ones here (a filter can't see embed-resources, so a deck that turns
+-- embedding off sets `inline-backgrounds: false` to keep links). reveal.js splits
+-- those attributes on commas, which breaks a data: URI, so the data goes into
+-- data-embedded-background-* and princeton.html hands reveal a blob: URL.
+local BACKGROUND_MIME = { mp4 = 'video/mp4', webm = 'video/webm', mov = 'video/quicktime',
+                          png = 'image/png', jpg = 'image/jpeg', jpeg = 'image/jpeg',
+                          gif = 'image/gif', svg = 'image/svg+xml', webp = 'image/webp' }
+
+local function inline_backgrounds(blocks)
+  local dir = pandoc.path.directory(quarto.doc.input_file)
+  return pandoc.Blocks(blocks):walk({ Header = function(h)
+    for _, key in ipairs({ 'background-video', 'background-image' }) do
+      local src = h.attributes[key]
+      local mime = src and BACKGROUND_MIME[(src:match('%.(%w+)$') or ''):lower()]
+      if mime and not src:match('^%a[%w+.-]*:') then
+        local f = io.open(pandoc.path.join({ dir, src }), 'rb')
+        if f then
+          h.attributes['data-embedded-' .. key] =
+            'data:' .. mime .. ';base64,' .. quarto.base64.encode(f:read('a'))
+          h.attributes[key] = nil
+          f:close()
+        else
+          quarto.log.warning('background not found, left as a link: ' .. src)
+        end
+      end
+    end
+    return h
+  end })
+end
+
 function Pandoc(doc)
   if not FORMAT:match('revealjs') then return nil end
   local meta = doc.meta
 
   if meta.outline ~= false then doc.blocks = outline_slides(doc.blocks) end
+  if meta['inline-backgrounds'] ~= false then doc.blocks = inline_backgrounds(doc.blocks) end
 
   local f = io.open(pandoc.path.join({ here, 'macros.tex' }))
   if f then

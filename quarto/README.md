@@ -59,8 +59,8 @@ Do this on the login node, because compute nodes have no internet.
    shared, so pick an unusual port. If it's already taken, `python3 -m http.server`
    fails with "Address already in use", and Playwright then reports
    `Reveal is not defined` because no deck loaded. Alternatively, copy the
-   rendered `slides.html`, `slides_files/` **and** `_theme/` to your laptop,
-   keeping the same relative layout (see the next section for why).
+   rendered `slides.html` to your laptop and open it there: it is self-contained
+   (see "Building a deck").
 
 ## Starting a deck
 
@@ -87,19 +87,26 @@ self-contained:
 
 ```bash
 quarto preview content/<date>/slides.qmd   # live reload in the browser
-quarto render  content/<date>/slides.qmd   # -> content/<date>/slides.html (+ slides_files/)
+quarto render  content/<date>/slides.qmd   # -> content/<date>/slides.html (one self-contained file)
 ```
 
 - `quarto render` with no file renders every deck; folders starting with `_` are
   skipped.
-- The rendered HTML is **not self-contained**: it links the font CSS and the logo
-  from the project's `_theme/` (`../_theme/…` for `example/`, `../../_theme/…` for
-  `content/<date>/`). To serve or copy a deck, include the `quarto/` root, or
-  Carlito silently falls back to another font and the logo disappears.
+- The rendered HTML is **self-contained** (`embed-resources: true` in
+  `_quarto.yml`): theme, Carlito, logo, figures and videos are all inlined into
+  `slides.html`, with no `slides_files/`, so the one file can be copied or mailed on
+  its own. Videos make it large (base64 adds about a third). reveal.js slide
+  backgrounds (`background-video`, `background-image`) aren't inlined by Quarto;
+  `_theme/princeton.lua` does it, and `_theme/princeton.html` hands them to reveal
+  as `blob:` URLs. To link resources instead (smaller file, but the deck then needs
+  `slides_files/`, `media/` and the project's `_theme/` beside it), set
+  `embed-resources: false` under `format: revealjs:` and `inline-backgrounds: false`
+  at the top of the deck's YAML.
 - Open the HTML in a browser: `F` for full screen, `S` for speaker notes. For a PDF,
   add `?print-pdf` to the URL and print from Chrome.
-- Math loads MathJax 4 from jsDelivr, so it needs a network connection when the
-  deck opens.
+- Math loads MathJax 4 from jsDelivr at run time, so it still needs a network
+  connection when the deck opens; embedding doesn't cover it. Decks without math
+  work offline.
 - Nothing warns when content runs off a slide (no `Overfull \vbox`), so check every
   slide by eye. If a slide is too full, split it.
 - **References over several slides.** A `## References` slide holding `::: {#refs}`

@@ -139,3 +139,25 @@
 })();
 
 </script>
+
+<script>
+// Slide backgrounds inlined by princeton.lua: turn data-embedded-background-video
+// / -image into blob: URLs (reveal.js splits a data: URI on its comma) and let
+// reveal rebuild the backgrounds.
+document.addEventListener('DOMContentLoaded', function () {
+  var kinds = ['video', 'image'], jobs = [];
+  document.querySelectorAll('.reveal .slides section').forEach(function (s) {
+    kinds.forEach(function (k) {
+      var data = s.getAttribute('data-embedded-background-' + k);
+      if (!data) return;
+      jobs.push(fetch(data).then(function (r) { return r.blob(); }).then(function (b) {
+        s.setAttribute('data-background-' + k, URL.createObjectURL(b));
+      }));
+    });
+  });
+  if (!jobs.length) return;
+  Promise.all(jobs).then(function () {
+    if (Reveal.isReady()) Reveal.sync(); else Reveal.on('ready', function () { Reveal.sync(); });
+  });
+});
+</script>
